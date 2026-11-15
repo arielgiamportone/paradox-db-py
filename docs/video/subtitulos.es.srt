@@ -1,0 +1,251 @@
+1
+00:00:00,000 --> 00:00:00,359
+Hola.
+
+2
+00:00:00,359 --> 00:00:03,229
+En este vídeo os presento paradox-db-py:
+
+3
+00:00:03,229 --> 00:00:09,185
+una librería en Python puro para leer y escribir tablas Paradox, el formato de base
+
+4
+00:00:09,185 --> 00:00:15,069
+de datos de escritorio que todavía sostiene muchas aplicaciones Delphi de los años
+
+5
+00:00:15,069 --> 00:00:15,643
+noventa.
+
+6
+00:00:15,643 --> 00:00:20,882
+Es el primero de una serie de casos de estudio clean-room que publico con
+
+7
+00:00:20,882 --> 00:00:24,111
+autorización de la empresa en la que trabajo.
+
+8
+00:00:24,711 --> 00:00:26,922
+Todo empieza con un problema real:
+
+9
+00:00:26,922 --> 00:00:31,540
+modernizar un sistema de activos fijos cuyo histórico vivía en Paradox.
+
+10
+00:00:31,540 --> 00:00:36,613
+Había que extraer todos los registros sin pérdida, y además devolver tablas al
+
+11
+00:00:36,613 --> 00:00:39,085
+sistema antiguo durante la transición.
+
+12
+00:00:39,085 --> 00:00:44,223
+Las opciones existentes en Python envuelven una librería en C con licencia GPL,
+
+13
+00:00:44,223 --> 00:00:49,491
+imponen una codificación global, se saltan registros que la cabecera no declara y
+
+14
+00:00:49,491 --> 00:00:51,442
+corrompen memoria al escribir.
+
+15
+00:00:51,442 --> 00:00:56,580
+Para un producto que se instala en las oficinas del cliente, nada de eso valía.
+
+16
+00:00:57,180 --> 00:00:58,882
+Vamos a verlo funcionar.
+
+17
+00:00:58,882 --> 00:01:01,010
+Instalo el paquete desde PyPI;
+
+18
+00:01:01,010 --> 00:01:02,570
+no tiene dependencias.
+
+19
+00:01:02,570 --> 00:01:08,243
+Como el repositorio no contiene ninguna tabla real, uso la fábrica sintética que
+
+20
+00:01:08,243 --> 00:01:12,923
+incluye la propia librería para crear una tabla con varios campos.
+
+21
+00:01:12,923 --> 00:01:16,824
+Después la abro con open_table y recorro sus registros:
+
+22
+00:01:16,824 --> 00:01:21,788
+cada celda llega con su estado, su valor en Python y sus bytes crudos.
+
+23
+00:01:22,388 --> 00:01:24,346
+Aquí está la idea central:
+
+24
+00:01:24,346 --> 00:01:30,597
+ningún nulo ni valor corrupto se convierte en cero o en cadena vacía por el camino.
+
+25
+00:01:30,597 --> 00:01:34,288
+Un entero codificado como cero es un cero válido;
+
+26
+00:01:34,288 --> 00:01:36,246
+una fecha a ceros es nulo;
+
+27
+00:01:36,246 --> 00:01:42,572
+y un decimal BCD con un dígito ilegal se devuelve como inválido, con el motivo y los
+
+28
+00:01:42,572 --> 00:01:43,853
+bytes originales.
+
+29
+00:01:43,853 --> 00:01:48,824
+Limpiar es decisión de quien consume los datos, no de la librería.
+
+30
+00:01:49,424 --> 00:01:55,332
+Las tablas antiguas suelen tener registros que la cabecera no cuenta, porque una
+
+31
+00:01:55,332 --> 00:02:00,798
+escritura interrumpida los dejó en los bloques sin actualizar el contador.
+
+32
+00:02:00,798 --> 00:02:06,633
+En esta tabla la cabecera declara quinientos noventa y ocho registros, pero los
+
+33
+00:02:06,633 --> 00:02:08,848
+bloques contienen seiscientos.
+
+34
+00:02:08,848 --> 00:02:12,393
+La librería los lee todos y expone el descuadre.
+
+35
+00:02:12,393 --> 00:02:16,086
+El comando profile resume cada tabla y cada campo:
+
+36
+00:02:16,086 --> 00:02:22,069
+cuántos valores correctos, nulos e inválidos, sumas, rangos y una huella SHA-256,
+
+37
+00:02:22,069 --> 00:02:24,506
+para conciliar sin exponer datos.
+
+38
+00:02:25,106 --> 00:02:28,102
+La escritura funciona sobre una plantilla:
+
+39
+00:02:28,102 --> 00:02:33,595
+copia la cabecera de una tabla existente, cambia solo los contadores y genera
+
+40
+00:02:33,595 --> 00:02:36,734
+ficheros nuevos, nunca modifica el original.
+
+41
+00:02:36,734 --> 00:02:42,654
+Si la tabla tiene clave primaria y una plantilla de índice, reconstruye el .PX como
+
+42
+00:02:42,654 --> 00:02:43,225
+árbol B.
+
+43
+00:02:43,225 --> 00:02:49,074
+Y el verificador comprueba que cada hoja apunta al bloque correcto, con su primera
+
+44
+00:02:49,074 --> 00:02:51,072
+clave y su recuento exactos.
+
+45
+00:02:51,672 --> 00:02:54,452
+Por dentro son quince módulos pequeños:
+
+46
+00:02:54,452 --> 00:03:00,367
+decodificadores con estado explícito, cabecera, cadena de bloques, memos, escritor,
+
+47
+00:03:00,367 --> 00:03:02,862
+índice, perfil y línea de comandos.
+
+48
+00:03:02,862 --> 00:03:08,279
+Las decisiones importantes están documentadas con la alternativa descartada:
+
+49
+00:03:08,279 --> 00:03:14,123
+Decimal en vez de float para importes y BCD, página de códigos por tabla en vez de
+
+50
+00:03:14,123 --> 00:03:20,110
+global, cabecera plantilla en vez de construirla desde cero, y descifrado delegado a
+
+51
+00:03:20,110 --> 00:03:23,959
+un componente externo para no copiar un algoritmo GPL.
+
+52
+00:03:24,559 --> 00:03:25,444
+Y el método:
+
+53
+00:03:25,444 --> 00:03:27,876
+proceso clean-room en tres fases.
+
+54
+00:03:27,876 --> 00:03:34,067
+Primero se escribió una especificación del formato y del comportamiento, sin código.
+
+55
+00:03:34,067 --> 00:03:40,259
+Después, en una sesión sin acceso al original, se implementó la librería a partir de
+
+56
+00:03:40,259 --> 00:03:45,565
+esa especificación, con un asistente de programación con IA como pareja.
+
+57
+00:03:45,565 --> 00:03:50,577
+Y por último una revisión independiente la comparó contra la fuente:
+
+58
+00:03:50,577 --> 00:03:52,420
+cero fragmentos copiados.
+
+59
+00:03:52,420 --> 00:03:58,538
+Ciento cuatro tests, integración continua en Python tres once y tres doce, licencia
+
+60
+00:03:58,538 --> 00:04:00,970
+MIT y README en español e inglés.
+
+61
+00:04:00,970 --> 00:04:02,813
+Está en GitHub y en PyPI:
+
+62
+00:04:02,813 --> 00:04:04,434
+pip install paradoxdb.
+
+63
+00:04:04,434 --> 00:04:06,277
+Gracias por ver el vídeo.

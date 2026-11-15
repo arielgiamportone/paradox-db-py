@@ -66,6 +66,8 @@ include = ["src/paradoxdb", "tests", "docs", "README.md", "README.es.md", "CHANG
 line-length = 100
 target-version = "py311"
 src = ["src", "tests"]
+# Demo scripts are shown verbatim in the explainer video; keep their layout as recorded.
+extend-exclude = ["docs/video/demo"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]

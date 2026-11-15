@@ -11,6 +11,9 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 - GitHub Actions workflow that builds, checks and publishes the package to PyPI
   through trusted publishing on every published release.
 
+- `docs/video/`: script, demo scripts, renderer and build pipeline of the
+  Spanish explainer video (narration, subtitles; no binaries).
+
 ### Changed
 
 - README links are absolute so that they work on the PyPI project page.

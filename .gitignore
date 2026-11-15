@@ -29,3 +29,11 @@ Thumbs.db
 *.px
 *.X??
 *.Y??
+
+# Video build outputs (docs/video): only sources are versioned
+docs/video/**/*.mp3
+docs/video/**/*.mp4
+docs/video/**/*.webm
+docs/video/**/*.png
+docs/video/**/demo_tables/
+docs/video/**/profile.json
