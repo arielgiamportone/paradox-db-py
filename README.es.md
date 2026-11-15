@@ -9,7 +9,7 @@ memos y BLOB, `.PX` índice primario), versiones 3.0 a 7. Sin código nativo, si
 dependencias copyleft, sin conversiones silenciosas: cada celda vuelve como
 `OK`, `NULL` o `INVALID` junto con sus bytes crudos.
 
-*English version: [README.md](README.md).*
+*English version: [README.md](https://github.com/arielgiamportone/paradox-db-py/blob/main/README.md).*
 
 > Patrones desarrollados durante mi trabajo en Intervalor Data y publicados con autorización. Implementación independiente (clean-room) con datos sintéticos; no contiene código ni datos de la empresa ni de sus clientes.
 
@@ -128,7 +128,7 @@ paradoxdb verify-index ./tablas/ACTIVOS.DB         # salida 1 si el .PX es incoh
 
 Las decisiones que la especificación dejaba abiertas (idioma de los mensajes,
 definición del recuento de entradas del `.PX`, cómo compara palabras el test de
-fugas, etc.) están en [docs/DECISIONES.md](docs/DECISIONES.md) con su motivo.
+fugas, etc.) están en [docs/DECISIONES.md](https://github.com/arielgiamportone/paradox-db-py/blob/main/docs/DECISIONES.md) con su motivo.
 
 ## 5. Qué se midió y cómo reproducirlo
 
@@ -196,5 +196,5 @@ git, además de `gitleaks`.
 
 Patrones desarrollados durante mi trabajo en Intervalor Data y publicados con autorización. Implementación independiente (clean-room) con datos sintéticos; no contiene código ni datos de la empresa ni de sus clientes.
 
-Licencia MIT. Véanse [LICENSE](LICENSE), [CHANGELOG.md](CHANGELOG.md) y
-[CONTRIBUTING.md](CONTRIBUTING.md).
+Licencia MIT. Véanse [LICENSE](https://github.com/arielgiamportone/paradox-db-py/blob/main/LICENSE), [CHANGELOG.md](https://github.com/arielgiamportone/paradox-db-py/blob/main/CHANGELOG.md) y
+[CONTRIBUTING.md](https://github.com/arielgiamportone/paradox-db-py/blob/main/CONTRIBUTING.md).

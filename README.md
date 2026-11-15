@@ -9,7 +9,7 @@ and BLOBs, `.PX` primary index), versions 3.0 to 7. No native code, no copyleft
 dependencies, no silent conversions: every cell comes back as `OK`, `NULL` or
 `INVALID` together with its raw bytes.
 
-*Versión en español: [README.es.md](README.es.md).*
+*Versión en español: [README.es.md](https://github.com/arielgiamportone/paradox-db-py/blob/main/README.es.md).*
 
 > Patterns developed during my work at Intervalor Data and published with permission. Independent clean-room implementation with synthetic data; it contains no code or data from the company or its clients.
 
@@ -128,7 +128,7 @@ paradoxdb verify-index ./tables/ASSETS.DB          # exit 1 when the .PX is inco
 
 Decisions that the specification left open (error-message language, how the
 `.PX` entry count is defined, how the leak guard matches words, and so on) are
-listed with their rationale in [docs/DECISIONES.md](docs/DECISIONES.md).
+listed with their rationale in [docs/DECISIONES.md](https://github.com/arielgiamportone/paradox-db-py/blob/main/docs/DECISIONES.md).
 
 ## 5. What was measured and how to reproduce it
 
@@ -194,5 +194,5 @@ guard (`tests/test_no_leaks.py`) over the tree and the git history, plus
 
 Patterns developed during my work at Intervalor Data and published with permission. Independent clean-room implementation with synthetic data; it contains no code or data from the company or its clients.
 
-MIT licence. See [LICENSE](LICENSE), [CHANGELOG.md](CHANGELOG.md) and
-[CONTRIBUTING.md](CONTRIBUTING.md).
+MIT licence. See [LICENSE](https://github.com/arielgiamportone/paradox-db-py/blob/main/LICENSE), [CHANGELOG.md](https://github.com/arielgiamportone/paradox-db-py/blob/main/CHANGELOG.md) and
+[CONTRIBUTING.md](https://github.com/arielgiamportone/paradox-db-py/blob/main/CONTRIBUTING.md).

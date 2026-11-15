@@ -6,6 +6,15 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- GitHub Actions workflow that builds, checks and publishes the package to PyPI
+  through trusted publishing on every published release.
+
+### Changed
+
+- README links are absolute so that they work on the PyPI project page.
+
 ## [0.1.0] - 2026-11-15
 
 ### Added
