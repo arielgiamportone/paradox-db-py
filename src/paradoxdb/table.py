@@ -122,6 +122,8 @@ class ParadoxTable:
         self.memo = memo
         self._decrypted = decrypted
         self.anomalies: list[Anomaly] = []
+        #: Set when a sibling .MB exists but cannot be read; BLOB cells are then INVALID.
+        self.memo_problem: str | None = None
         self._blocks = None if decrypted is None else []
         self.secondary_indexes = find_secondary_indexes(path)
 
@@ -217,7 +219,13 @@ def open_table(
     if header.is_primary_index:
         raise FormatError(f"{path.name} is a primary index (.PX), not a table")
     memo_path = find_sibling(path, ".MB")
-    memo = MemoFile.load(memo_path) if memo_path else None
+    memo = None
+    memo_problem: str | None = None
+    if memo_path is not None:
+        try:
+            memo = MemoFile.load(memo_path)
+        except FormatError as exc:
+            memo_problem = f"{memo_path.name}: {exc}; BLOB cells will be invalid"
     decrypted = None
     if header.is_encrypted:
         if decryptor is None:
@@ -233,4 +241,7 @@ def open_table(
             if len(raw) != header.record_size:
                 raise FormatError("decryptor returned a record of the wrong size")
         decrypted = (list(plain), list(blobs))
-    return ParadoxTable(path, data, header, memo, decrypted=decrypted)
+    table = ParadoxTable(path, data, header, memo, decrypted=decrypted)
+    if memo_problem is not None:
+        table.memo_problem = memo_problem
+    return table
