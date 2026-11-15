@@ -36,7 +36,7 @@ aleatorias con claves únicas.
 | Lectura por bloques (streaming) | La spec fija fichero íntegro en memoria. |
 | Validación en un BDE real | Imposible en este entorno; la spec lo marca como pendiente. Los round-trips se validan con el propio lector. |
 | Comparación contra la librería C | No se instala ninguna dependencia GPL en el repo público; la spec aporta el resultado del proyecto original como contexto. |
-| Ejecución local de `gitleaks` | El binario se descargó pero el entorno de la sesión denegó su ejecución. Queda a cargo de la CI (`gitleaks/gitleaks-action@v2`), configurada desde el primer commit. |
+| Ejecución local de `gitleaks` | El entorno de la sesión denegó ejecutar el binario descargado. La CI (`gitleaks/gitleaks-action@v2`, configurada desde el primer commit) lo ejecutó y pasó en verde. |
 
 ## 3. Decisiones propias
 
@@ -64,7 +64,7 @@ Además, durante la implementación: una cabecera `.MB` truncada no aborta
 | `pytest` en Python 3.11 | 104 tests en verde |
 | `ruff check .` y `ruff format --check .` | Sin incidencias |
 | `tests/test_no_leaks.py` sobre árbol + `git log -p --all` | En verde (114 términos, 2 frases de atribución permitidas) |
-| `gitleaks` | Pendiente de la CI (ver §2) |
+| `gitleaks` | En verde en la CI (ejecución 1 de la rama); la ejecución local no fue posible en esta sesión |
 | `python examples/benchmark.py` | 50 000 filas: lectura 1,3 s; escritura `.DB`+`.PX` 0,09 s; `.PX` de 2 niveles verifica; `.MB` ×27 con memos cortos |
 | Paquete | `pip install -e ".[dev]"` con `hatchling`; `paradoxdb` y `python -m paradoxdb` funcionan; `py.typed` incluido |
 
