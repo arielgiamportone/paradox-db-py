@@ -72,6 +72,12 @@ _ALLOWED_B64 = (
 # session identifiers and are not leaks of the private source.
 _IGNORED_LINE_PREFIXES = ("Author:", "Co-Authored-By:", "Claude-Session:")
 
+# The public GitHub handle of the repository owner (base64, like the terms). It
+# is the only place where the owner's name may appear (package metadata,
+# licence, repository URLs); the forbidden list still bans the name and surname
+# as stand-alone words, which is how the private source leaks them (user paths).
+_ALLOWED_HANDLE_B64 = "YXJpZWxnaWFtcG9ydG9uZQ=="
+
 
 def _decode(blob: str) -> list[str]:
     return json.loads(base64.b64decode(blob).decode("utf-8"))
@@ -93,6 +99,8 @@ def _pattern(term: str) -> re.Pattern[str]:
 def _scrub(text: str) -> str:
     for phrase in allowed_phrases():
         text = text.replace(phrase, "")
+    handle = base64.b64decode(_ALLOWED_HANDLE_B64).decode("ascii")
+    text = re.sub(re.escape(handle), "", text, flags=re.IGNORECASE)
     lines = [
         line
         for line in text.splitlines()
