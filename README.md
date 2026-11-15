@@ -1,6 +1,7 @@
 # paradox-db-py
 
 [![CI](https://github.com/arielgiamportone/paradox-db-py/actions/workflows/ci.yml/badge.svg)](https://github.com/arielgiamportone/paradox-db-py/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/paradoxdb.svg)](https://pypi.org/project/paradoxdb/)
 ![Python 3.11 | 3.12](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 
@@ -135,7 +136,8 @@ listed with their rationale in [docs/DECISIONES.md](https://github.com/arielgiam
 Everything below runs on synthetic data produced by the repository itself.
 
 ```bash
-pip install -e ".[dev]"
+pip install paradoxdb           # released package, no runtime dependencies
+pip install -e ".[dev]"        # or a development checkout
 pytest                          # 100+ tests, including Hypothesis round-trip properties
 python examples/benchmark.py    # timings and .MB growth on a 50 000-row table
 ```

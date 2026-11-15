@@ -14,6 +14,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - README links are absolute so that they work on the PyPI project page.
+- README shows the PyPI badge and `pip install paradoxdb` (0.1.0 published on PyPI on 2026-11-15).
 
 ## [0.1.0] - 2026-11-15
 
