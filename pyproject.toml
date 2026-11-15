@@ -1,0 +1,79 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "paradoxdb"
+version = "0.1.0"
+description = "Pure-Python reader and writer for Paradox tables (.DB / .MB / .PX) with explicit per-cell state"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "arielgiamportone" }]
+keywords = [
+  "paradox",
+  "borland",
+  "bde",
+  "delphi",
+  "legacy",
+  "database",
+  "migration",
+  "file-format",
+  "bcd",
+  "memo",
+  "b-tree",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Database",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "hypothesis>=6",
+  "ruff>=0.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/arielgiamportone/paradox-db-py"
+Repository = "https://github.com/arielgiamportone/paradox-db-py"
+Issues = "https://github.com/arielgiamportone/paradox-db-py/issues"
+Changelog = "https://github.com/arielgiamportone/paradox-db-py/blob/main/CHANGELOG.md"
+
+[project.scripts]
+paradoxdb = "paradoxdb.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/paradoxdb"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/paradoxdb", "tests", "docs", "README.md", "README.es.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
