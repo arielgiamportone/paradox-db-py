@@ -14,7 +14,14 @@ from dataclasses import dataclass
 
 from .header import TableHeader
 
-__all__ = ["BLOCK_HEADER_SIZE", "Anomaly", "RawBlock", "iter_blocks", "pack_blocks"]
+__all__ = [
+    "BLOCK_HEADER_SIZE",
+    "Anomaly",
+    "RawBlock",
+    "iter_blocks",
+    "pack_block_groups",
+    "pack_blocks",
+]
 
 BLOCK_HEADER_SIZE = 6
 _BLOCK_HEADER = struct.Struct("<HHh")
@@ -98,12 +105,26 @@ def pack_blocks(records: Sequence[bytes], record_size: int, block_size: int) -> 
     capacity = (block_size - BLOCK_HEADER_SIZE) // record_size
     if capacity < 1:
         raise ValueError("record does not fit in a block")
-    chunks = [records[i : i + capacity] for i in range(0, len(records), capacity)] or [()]
-    if len(chunks) > MAX_BLOCKS:
+    groups = [records[i : i + capacity] for i in range(0, len(records), capacity)] or [()]
+    return pack_block_groups(groups, record_size, block_size)
+
+
+def pack_block_groups(
+    groups: Sequence[Sequence[bytes]], record_size: int, block_size: int
+) -> tuple[bytes, int]:
+    """Write one block per group, chained in order; groups must respect the block capacity."""
+    capacity = (block_size - BLOCK_HEADER_SIZE) // record_size
+    if capacity < 1:
+        raise ValueError("record does not fit in a block")
+    if not groups:
+        groups = [()]
+    if len(groups) > MAX_BLOCKS:
         raise ValueError("too many blocks for a 16-bit block number")
     out = bytearray()
-    total = len(chunks)
-    for i, chunk in enumerate(chunks, start=1):
+    total = len(groups)
+    for i, chunk in enumerate(groups, start=1):
+        if len(chunk) > capacity:
+            raise ValueError(f"{len(chunk)} records exceed the block capacity of {capacity}")
         block = bytearray(block_size)
         last_offset = (len(chunk) - 1) * record_size if chunk else -record_size
         _BLOCK_HEADER.pack_into(block, 0, i + 1 if i < total else 0, i - 1, last_offset)

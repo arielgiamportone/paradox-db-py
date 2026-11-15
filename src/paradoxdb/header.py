@@ -60,6 +60,7 @@ TABLE_NAME_AREA = 79
 MIN_EXTENDED_VERSION = 5
 MIN_V7_VERSION = 12
 HEADER_PROBE = 4096  # the first 4 KiB are enough to interpret any header
+INDEX_ENTRY_TAIL = 6  # child block, count and zero: three Paradox shorts per .PX entry
 
 
 class FileType(IntEnum):
@@ -253,9 +254,11 @@ def parse_header(data: bytes, default_codec: str = "cp437") -> TableHeader:
         length = physical_size(ftype, size_byte)
         fields.append(FieldDef(name, ftype, size_byte, offset, length))
         offset += length
-    if offset != record_size:
+    # In a .PX every entry is the key followed by three 2-byte shorts.
+    expected = offset + INDEX_ENTRY_TAIL if file_type == FileType.PRIMARY_INDEX else offset
+    if expected != record_size:
         raise FormatError(
-            f"field sizes add up to {offset} bytes but the record size is {record_size}"
+            f"field sizes add up to {expected} bytes but the record size is {record_size}"
         )
 
     return TableHeader(

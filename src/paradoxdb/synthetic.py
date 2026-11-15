@@ -34,9 +34,6 @@ from .header import (
 )
 from .memo import (
     MB_BLOCK_SIZE,
-    SINGLE_BLOCK_HEADER,
-    SINGLE_BLOCK_INDEX,
-    SINGLE_BLOCK_TYPE,
     SUBALLOC_BLOCK_TYPE,
     SUBALLOC_DATA_START,
     SUBALLOC_ENTRY_SIZE,
@@ -44,6 +41,7 @@ from .memo import (
     SUBALLOC_MAX_ENTRIES,
     SUBALLOC_UNIT,
     MemoPointer,
+    MemoWriter,
 )
 from .values import encode_blob_field, encode_value
 
@@ -277,35 +275,11 @@ def build_px_template(spec: TableSpec, *, block_size_kib: int | None = None) -> 
 # --------------------------------------------------------------------------- memos
 
 
-class MemoBuilder:
-    """Accumulates memo / BLOB content into a ``.MB`` image."""
-
-    def __init__(self, header_block: bytes | None = None) -> None:
-        if header_block is None:
-            header_block = bytes(MB_BLOCK_SIZE)
-        if len(header_block) != MB_BLOCK_SIZE:
-            raise ValueError("the .MB header block is 4096 bytes long")
-        self._data = bytearray(header_block)
-        self._counter = 1
+class MemoBuilder(MemoWriter):
+    """:class:`~paradoxdb.memo.MemoWriter` plus sub-allocated (type 3) blocks for the tests."""
 
     def _next_counter(self) -> int:
-        value = self._counter
-        self._counter = (self._counter % 0xFFFF) + 1
-        return value
-
-    def add_single(self, content: bytes) -> MemoPointer:
-        """Store ``content`` in its own run of 4 KiB blocks (type 2)."""
-        start = len(self._data)
-        payload = SINGLE_BLOCK_HEADER.size + len(content)
-        block_count = _round_up(payload, MB_BLOCK_SIZE) // MB_BLOCK_SIZE
-        chunk = bytearray(block_count * MB_BLOCK_SIZE)
-        counter = self._next_counter()
-        SINGLE_BLOCK_HEADER.pack_into(
-            chunk, 0, SINGLE_BLOCK_TYPE, block_count, len(content), counter
-        )
-        chunk[SINGLE_BLOCK_HEADER.size : SINGLE_BLOCK_HEADER.size + len(content)] = content
-        self._data += chunk
-        return MemoPointer(start | SINGLE_BLOCK_INDEX, len(content), counter)
+        return self.modcount
 
     def add_suballocated(self, contents: Sequence[bytes]) -> list[MemoPointer]:
         """Store several short contents in one sub-allocated block (type 3)."""
