@@ -27,6 +27,7 @@ __all__ = [
     "SUBALLOC_MAX_ENTRIES",
     "MemoFile",
     "MemoPointer",
+    "MemoWriter",
 ]
 
 MB_BLOCK_SIZE = 4096
@@ -156,3 +157,43 @@ class MemoFile:
         if end > len(self.data):
             raise FormatError(f"memo entry {index} at 0x{start:X} runs past the end of the file")
         return self.data[begin:end]
+
+
+class MemoWriter:
+    """Builds a new ``.MB`` image where every content gets its own single-block entry (type 2).
+
+    The first 4 KiB block is the file header: it is copied from the original
+    ``.MB`` when there is one, or left as zeros otherwise. Every pointer uses
+    modification counter 1.
+    """
+
+    modcount = 1
+
+    def __init__(self, header_block: bytes | None = None) -> None:
+        if header_block is None:
+            header_block = bytes(MB_BLOCK_SIZE)
+        if len(header_block) != MB_BLOCK_SIZE:
+            raise ValueError("the .MB header block is 4096 bytes long")
+        self._data = bytearray(header_block)
+
+    def add_single(self, content: bytes) -> MemoPointer:
+        """Append ``content`` in its own run of 4 KiB blocks and return its pointer."""
+        start = len(self._data)
+        payload = SINGLE_BLOCK_HEADER.size + len(content)
+        block_count = -(-payload // MB_BLOCK_SIZE)
+        if block_count > 0xFFFF:
+            raise FormatError("BLOB content too large for a single-block memo")
+        chunk = bytearray(block_count * MB_BLOCK_SIZE)
+        SINGLE_BLOCK_HEADER.pack_into(
+            chunk, 0, SINGLE_BLOCK_TYPE, block_count, len(content), self.modcount
+        )
+        chunk[SINGLE_BLOCK_HEADER.size : SINGLE_BLOCK_HEADER.size + len(content)] = content
+        self._data += chunk
+        return MemoPointer(start | SINGLE_BLOCK_INDEX, len(content), self.modcount)
+
+    @property
+    def size(self) -> int:
+        return len(self._data)
+
+    def to_bytes(self) -> bytes:
+        return bytes(self._data)
