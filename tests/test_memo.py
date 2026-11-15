@@ -110,3 +110,15 @@ def test_binary_blob_round_trip(tmp_path: Path) -> None:
     (tmp_path / "bin.MB").write_bytes(mb.to_bytes())
     (record,) = open_table(tmp_path / "bin.DB").records()
     assert record["Bin"].value == payload
+
+
+def test_truncated_memo_file_does_not_abort_opening(tmp_path: Path) -> None:
+    spec = _notes_spec()
+    mb = MemoBuilder()
+    rows = [encode_row(spec, {"Id": 1, "Note": "x" * 200}, mb)]
+    (tmp_path / "trunc.DB").write_bytes(build_table_bytes(spec, rows))
+    (tmp_path / "trunc.MB").write_bytes(b"\0" * 100)  # shorter than the 4 KiB header block
+    table = open_table(tmp_path / "trunc.DB")
+    assert table.memo is None and table.memo_problem is not None
+    (record,) = table.records()
+    assert record["Note"].state is ValueState.INVALID
