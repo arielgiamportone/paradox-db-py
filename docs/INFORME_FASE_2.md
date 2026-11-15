@@ -84,7 +84,18 @@ contenía una palabra de la lista prohibida (nombre de tabla del legado que
 coincide con un sustantivo común en español); el propio test de fugas la
 detectó.
 
-## 5. Qué revisar en la fase 3
+## 5. Resultado de la fase 3
+
+Revisión realizada el 2026-11-15 con acceso a la fuente (informe en el repo
+privado de specs, `docs/casos-estudio/paradox-db-py/REVISION.md`). Veredicto
+inicial **CORREGIR** con un único punto: dos commits (el inicial y el merge del
+PR #1) llevaban el nombre completo y el correo personal del titular. Corregido
+reescribiendo el historial completo con el handle público y el correo *noreply*
+de GitHub, lo que lleva el veredicto a **PUBLICAR**. Sin fragmentos idénticos,
+sin identificadores no triviales compartidos, sin constantes fuera de la spec,
+sin datos reales; la definición de 0x06 del `.PX` (D5) coincide con la fuente.
+
+## 6. Qué se pidió revisar en la fase 3
 
 1. **Lista prohibida vs. vocabulario común.** Confirmar que la coincidencia por
    palabra completa (D3) es aceptable. Si se prefiere `grep -i` de subcadenas,
