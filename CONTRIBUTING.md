@@ -5,9 +5,11 @@ Thanks for your interest in `paradoxdb`.
 ## Ground rules
 
 - **Clean-room project.** Everything here is implemented from the public
-  description of the Paradox file format and from the specification in
-  `docs/`. Do not contribute code, constants or fixtures taken from other
-  Paradox implementations with incompatible licences (for example GPL code).
+  description of the Paradox file format and from a written specification
+  of the behaviour (the design decisions it left open are recorded in
+  `docs/DECISIONES.md`). Do not contribute code, constants or fixtures taken
+  from other Paradox implementations with incompatible licences (for example
+  GPL code).
 - **Synthetic data only.** Tests and examples must use tables produced by
   `paradoxdb.synthetic`. Never commit a real `.DB`, `.MB` or `.PX` file, even
   an "anonymised" one.
